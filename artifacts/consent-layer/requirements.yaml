@@ -1,0 +1,11 @@
+packages:
+  "framer-motion": "For smooth glassmorphism transitions and page animations"
+  "clsx": "For conditional class name merging"
+  "tailwind-merge": "For merging tailwind classes safely in UI components"
+
+images: []
+
+notes:
+  - Using generated React Query hooks from @workspace/api-client-react
+  - Simulating the AI explain flow with real backend endpoints
+  - Implementing glassmorphism and subtle gradients for a modern security feel

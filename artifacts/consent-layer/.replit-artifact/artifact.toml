@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Intelligent Consent & Safe Sharing Layer"
+version = "1.0.0"
+id = "artifacts/consent-layer"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 22451
+
+[services.development]
+run = "pnpm --filter @workspace/consent-layer run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/consent-layer", "run", "build" ]
+publicDir = "artifacts/consent-layer/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "22451"
+BASE_PATH = "/"

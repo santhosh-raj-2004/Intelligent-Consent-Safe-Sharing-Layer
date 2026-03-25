@@ -1,0 +1,175 @@
+openapi: 3.1.0
+info:
+  title: Api
+  version: 0.1.0
+  description: API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: consent
+    description: Consent and data sharing operations
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /explain:
+    post:
+      operationId: explainConsent
+      tags: [consent]
+      summary: Explain data usage
+      description: Returns a plain-language explanation and risk level for a data type/purpose pair
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExplainRequest"
+      responses:
+        "200":
+          description: Explanation and risk level
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExplainResponse"
+  /decision:
+    post:
+      operationId: submitDecision
+      tags: [consent]
+      summary: Submit user decision
+      description: Store user's accept/reject decision
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DecisionRequest"
+      responses:
+        "200":
+          description: Decision recorded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DecisionResponse"
+  /status:
+    get:
+      operationId: getStatus
+      tags: [consent]
+      summary: Get current consent status
+      description: Returns the current user decision status
+      responses:
+        "200":
+          description: Current status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StatusResponse"
+  /revoke:
+    post:
+      operationId: revokeAccess
+      tags: [consent]
+      summary: Revoke data access
+      description: Revoke previously granted data access
+      responses:
+        "200":
+          description: Access revoked
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RevokeResponse"
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+    ExplainRequest:
+      type: object
+      properties:
+        data_type:
+          type: string
+          description: The type of data (e.g. location, contacts, email)
+        purpose:
+          type: string
+          description: The purpose of data collection
+      required:
+        - data_type
+        - purpose
+    ExplainResponse:
+      type: object
+      properties:
+        explanation:
+          type: string
+          description: Plain-language explanation of data usage
+        risk:
+          type: string
+          enum: [Low, Moderate, High]
+          description: Risk level of sharing this data
+        data_type:
+          type: string
+        purpose:
+          type: string
+      required:
+        - explanation
+        - risk
+        - data_type
+        - purpose
+    DecisionRequest:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [accepted, rejected]
+      required:
+        - status
+    DecisionResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        status:
+          type: string
+          enum: [accepted, rejected]
+      required:
+        - message
+        - status
+    StatusResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [accepted, rejected, pending, revoked]
+        data_type:
+          type: string
+          nullable: true
+        purpose:
+          type: string
+          nullable: true
+      required:
+        - status
+    RevokeResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        status:
+          type: string
+          enum: [revoked]
+      required:
+        - message
+        - status
